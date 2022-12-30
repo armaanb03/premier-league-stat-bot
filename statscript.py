@@ -191,7 +191,9 @@ def team_player_info():
 
                 try:
                     key = stat.find('th').get_text()
-                    val = stat.find('td', {'data-stat': 'percentile'})['csk']
+                    percentile = stat.find('td', {'data-stat': 'percentile'})['csk']
+                    per90 = stat.find('td', {'data-stat': 'per90'})['csk']
+                    val = f"{per90} ({percentile})"
                     player_report[key] = val
                 except KeyError:
                     pass
@@ -247,6 +249,6 @@ def populate_stat_leaders(leader_base, leaders, collection_name, div_id):
 
 
 if __name__ == "__main__":
-    # team_general_info()
-    # team_player_info()
+    team_general_info()
+    team_player_info()
     league_leaders()
