@@ -28,7 +28,7 @@ def team_general_info():
 
         logo = team_soup.find(class_="teamlogo")['src']
 
-        team_general = {"Badge": logo, "Name": name.find('a').get_text()}
+        team_general = {"Badge": logo, "Name": name.find('a').get_text(), "Manager": 'N/A'}
         teams_info = team_soup.find('div', {'data-template': 'Partials/Teams/Summary'}).find_all('strong')
 
         for team_info in teams_info:
@@ -193,7 +193,7 @@ def team_player_info():
                     key = stat.find('th').get_text()
                     percentile = stat.find('td', {'data-stat': 'percentile'})['csk']
                     per90 = stat.find('td', {'data-stat': 'per90'})['csk']
-                    val = f"{per90} ({percentile})"
+                    val = f"{per90} per 90 ({percentile})"
                     player_report[key] = val
                 except KeyError:
                     pass
@@ -222,33 +222,29 @@ def league_leaders():
 
 def populate_stat_leaders(leader_base, leaders, collection_name, div_id):
     stat_collection = leader_base[collection_name]
+    stat_collection.delete_many({})
     top_leaders = leaders.find('div', id=div_id).find('table', class_='columns').find_all('tr')
-    stat_dict = {}
 
-    prev_rank = 0
+    boardlist = []
 
     for leader in top_leaders:
-        rank = leader.find('td', class_='rank').get_text().replace(".", "")
+        #rank = leader.find('td', class_='rank').get_text().replace(".", "")
 
         player_name = leader.find('td', class_='who').get_text().replace(u'\xa0', ' ')
         num_of_stat = leader.find('td', class_='value').get_text().strip()
-        name_string = [f"{player_name} ({num_of_stat})"]
+        name_string = f"{player_name} ({num_of_stat})"
 
-        if rank == "":
-            rank = prev_rank
-            previous_leader = stat_dict[prev_rank]
-            new_input = previous_leader + name_string
-            stat_dict[prev_rank] = new_input
-        else:
-            stat_dict[rank] = name_string
+        boardlist.append(name_string)
 
-        prev_rank = rank
-
-    newvalues = {"$set": stat_dict}
+    newvalues = {"$set": {"Leaders": boardlist}}
     stat_collection.update_one({}, newvalues, True)
 
 
 if __name__ == "__main__":
     team_general_info()
-    team_player_info()
+    print("Populating team general info complete...")
     league_leaders()
+    print("Populating league statistical data complete...")
+    team_player_info()
+    print("Populating player general information and scouting reports complete...")
+    
