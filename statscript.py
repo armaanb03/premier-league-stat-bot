@@ -218,6 +218,7 @@ def league_leaders():
     populate_stat_leaders(leader_base, leaders, 'top_g/ap90', 'leaders_goals_assists_per90')
     populate_stat_leaders(leader_base, leaders, 'top_goalsp90', 'leaders_goals_per90')
     populate_stat_leaders(leader_base, leaders, 'top_assistsp90', 'leaders_assists_per90')
+    populate_stat_leaders(leader_base, leaders, 'top_key_passes', 'leaders_assisted_shots')
 
 
 def populate_stat_leaders(leader_base, leaders, collection_name, div_id):
@@ -226,6 +227,7 @@ def populate_stat_leaders(leader_base, leaders, collection_name, div_id):
     top_leaders = leaders.find('div', id=div_id).find('table', class_='columns').find_all('tr')
 
     boardlist = []
+    outDict = {}
 
     for leader in top_leaders:
         #rank = leader.find('td', class_='rank').get_text().replace(".", "")
@@ -236,7 +238,26 @@ def populate_stat_leaders(leader_base, leaders, collection_name, div_id):
 
         boardlist.append(name_string)
 
-    newvalues = {"$set": {"Leaders": boardlist}}
+        if boardlist[0] == name_string:
+            time.sleep(2.1)
+            player_link = requests.get('https://fbref.com' + leader.find('td', class_='who').find('a')['href']).text
+            league_leader_soup = BeautifulSoup(player_link, 'lxml')
+
+            player_general_info = league_leader_soup.find('div', id="meta")
+
+            player_img = "https://cdn.ssref.net/req/202212191/tlogo/fb/9.png"
+
+            try:
+                player_img = player_general_info.find('img')['src']
+            except TypeError:
+                pass
+            
+            outDict['Leader Image'] = player_img
+
+
+    outDict['Leaders'] = boardlist
+
+    newvalues = {"$set": outDict}
     stat_collection.update_one({}, newvalues, True)
 
 
