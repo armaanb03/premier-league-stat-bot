@@ -73,13 +73,13 @@ client.on('interactionCreate', async interaction => {
     const statName = interaction.options.getString('stat');
     const statInfo = await StatInfo(statName);
 
-    if (statInfo != null) {
+    if (statInfo[0] != null && statInfo[1] != undefined) {
       var boardString = '';
-      statInfo.forEach((player) => {
+      statInfo[0].forEach((player) => {
         boardString += player + '\n'
       })
 
-      const boardEmbed = new EmbedBuilder().setTitle(await titleCase(statName)).setColor(0x7151ce)
+      const boardEmbed = new EmbedBuilder().setTitle(await titleCase(statName)).setColor(0x7151ce).setThumbnail(statInfo[1])
       .addFields(
         { name: 'Leaders', value: boardString }
       );
@@ -270,9 +270,7 @@ async function StatInfo(statInput) {
     const LeaderBase = mongoClient.db('StatLeaders')
     var leaders = await LeaderBase.collection(input).find().toArray();
 
-    var leaderboard = []
-
-    leaderboard = leaders[0]["Leaders"];
+    var leaderboard = [leaders[0]["Leaders"], leaders[0]["Leader Image"]]
 
     return leaderboard;
   } catch (error) {
