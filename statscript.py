@@ -167,7 +167,7 @@ def team_player_info():
             have_report = True
 
             try:
-                player_stats = player_soup.find('div', id="all_scout").find('tbody').find_all('tr')
+                player_stats = player_soup.find('div', id="all_scout_summary").find('tbody').find_all('tr')
             except AttributeError:
                 have_report = False
                 player_stats = [1, 2]
@@ -200,7 +200,7 @@ def team_player_info():
 
             if player_report != {}:
                 player_post["Scouting Report"] = player_report
-
+                
             filter = {"Name": player_general_info.find('h1').find('span').get_text()}
             newvalues = {"$set": player_post}
             players_collection.update_one(filter, newvalues, True)
