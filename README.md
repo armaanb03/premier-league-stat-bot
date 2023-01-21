@@ -1,5 +1,5 @@
 ## Premier League Stat Bot
-Discord bot which outputs various stats and information about the English Premier League. Data is in a MongoDB database, and is obtained from https://www.fbref.com via web scraping.
+Discord bot which outputs various stats and information about the English Premier League. Data is in a MongoDB database, and is obtained from https://www.fbref.com/en/comps/9/Premier-League-Stats via web scraping.
 
 ## Commands:
 The commands of this bot give access to information about current premier league teams, and additionally every premier league player.
